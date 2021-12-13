@@ -7,9 +7,13 @@ sealed class QuoteUIState : Mapper<Unit, ContentMapper> {
 
     object Progress : QuoteUIState()
 
-    class Success(private val text: String, private val author: String) : QuoteUIState() {
+    class Success(
+        private val text: String,
+        private val author: String,
+        private val toSave: Boolean,
+    ) : QuoteUIState() {
         override fun map(mapper: ContentMapper) {
-            mapper.map(text, author)
+            mapper.map(text, author, toSave)
         }
     }
 

@@ -3,6 +3,7 @@ package com.example.quotesapp.ui.home.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +12,9 @@ import com.example.quotesapp.ui.QuoteUIState
 import com.example.quotesapp.ui.home.mapper.ContentMapper
 
 
-class QuotesAdapter(private val itemClickListener: (text: String, author: String) -> Unit) :
+class QuotesAdapter(
+    private val itemClickListener: (text: String, author: String, toSave: Boolean, bool: Boolean) -> Unit,
+) :
     RecyclerView.Adapter<QuotesAdapter.QuotesViewHolder>() {
 
     private val listUIState = arrayListOf<QuoteUIState>()
@@ -26,6 +29,7 @@ class QuotesAdapter(private val itemClickListener: (text: String, author: String
             is QuoteUIState.Fail -> 0
             is QuoteUIState.Success -> 1
             is QuoteUIState.Progress -> 2
+            else -> 4
         }
     }
 
@@ -46,7 +50,8 @@ class QuotesAdapter(private val itemClickListener: (text: String, author: String
         LayoutInflater.from(parent.context).inflate(this, parent, false)
 
     override fun onBindViewHolder(holder: QuotesViewHolder, position: Int) {
-        holder.bind(listUIState[position])
+        val bind: QuoteUIState = listUIState[position]
+        holder.bind(bind)
     }
 
 
@@ -63,17 +68,39 @@ class QuotesAdapter(private val itemClickListener: (text: String, author: String
 
         class Base(
             private val view: View,
-            private val itemClickListener: (text: String, author: String) -> Unit,
+            private val itemClickListener: (text: String, author: String,toSave: Boolean, bool: Boolean) -> Unit,
         ) :
             QuotesViewHolder(view) {
             private val mText = itemView.findViewById<TextView>(R.id.text_quote)
             private val mAuthor = itemView.findViewById<TextView>(R.id.author)
             private val cv = itemView.findViewById<CardView>(R.id.cv)
+            private val blue = itemView.findViewById<ImageView>(R.id.favourite_imageview)
             override fun bind(quote: QuoteUIState) {
-                quote.map(object : ContentMapper() {
-                    override fun map(text: String, author: String) {
+                quote.map(object : ContentMapper {
+                    override fun map(text: String, author: String, toSave: Boolean) {
                         mText.text = text
                         mAuthor.text = author
+                        if (toSave){
+                            blue.setBackgroundResource(R.drawable.star_full_black)
+
+                        }else{
+                            blue.setBackgroundResource(R.drawable.star_full_blue)
+                        }
+                        cv.setOnClickListener {
+                            itemClickListener.invoke(text, author, false, true)
+                        }
+
+                        blue.setOnClickListener {
+                            if (it.tag.toString() == "1") {
+                                it.tag = "2"
+                                it.setBackgroundResource(R.drawable.star_full_black)
+                                itemClickListener.invoke(text, author, true, false)
+                            } else {
+                                it.tag = "1"
+                                it.setBackgroundResource(R.drawable.star_full_blue)
+                                itemClickListener.invoke(text, author, false, false)
+                            }
+                        }
                     }
                 })
             }
@@ -83,8 +110,8 @@ class QuotesAdapter(private val itemClickListener: (text: String, author: String
         class Fail(view: View) : QuotesViewHolder(view) {
             private val textView = itemView.findViewById<TextView>(R.id.error_text)
             override fun bind(uiState: QuoteUIState) {
-                uiState.map(object : ContentMapper() {
-                    override fun map(text: String, author: String) {
+                uiState.map(object : ContentMapper {
+                    override fun map(text: String, author: String, toSave: Boolean) {
                         if (author == "1")
                             textView.text = text
                     }

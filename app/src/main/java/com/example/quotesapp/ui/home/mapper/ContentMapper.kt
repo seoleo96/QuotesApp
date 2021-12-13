@@ -1,6 +1,6 @@
 package com.example.quotesapp.ui.home.mapper
 
 
-abstract class ContentMapper {
-    abstract fun map(text: String, author: String = "1")
+interface ContentMapper {
+    fun map(text: String, author: String = "1", toSave: Boolean = false)
 }
