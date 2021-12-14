@@ -33,6 +33,9 @@
         <argument
             android:name="author"
             app:argType="string" />
+        <action
+            android:id="@+id/action_quoteDialogFragment_to_navigation_favourites"
+            app:destination="@id/navigation_favourites" />
     </dialog>
     <dialog
         android:id="@+id/authorsDialogFragment"
@@ -45,7 +48,11 @@
     <fragment
         android:id="@+id/navigation_favourites"
         android:name="com.example.quotesapp.ui.favourites.FavouritesFragment"
-        android:label="Favourites" />
+        android:label="Favourites" >
+        <action
+            android:id="@+id/action_navigation_favourites_to_quoteDialogFragment"
+            app:destination="@id/quoteDialogFragment" />
+    </fragment>
 
 
 </navigation>

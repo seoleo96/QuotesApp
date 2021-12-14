@@ -16,5 +16,13 @@ sealed class FavouritesUIState : Mapper<Unit, FavouritesContentMapper> {
         }
     }
 
+    class Empty(
+        private val text: String,
+    ) : FavouritesUIState() {
+        override fun map(mapper: FavouritesContentMapper) {
+            mapper.map(text)
+        }
+    }
+
     override fun map(mapper: FavouritesContentMapper) = Unit
 }

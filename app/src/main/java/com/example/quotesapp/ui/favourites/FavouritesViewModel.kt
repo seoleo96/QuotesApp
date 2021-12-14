@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.quotesapp.domain.mapper.FavDomainToUIMapper
 import com.example.quotesapp.domain.model.QuoteDomain
 import com.example.quotesapp.domain.usecase.fetchquotes.FetchFavouritesCase
+import com.example.quotesapp.domain.usecase.fetchquotes.SaveAndDeleteFavouritesUseCase
 import com.example.quotesapp.ui.QuoteUIState
 import com.example.quotesapp.ui.home.mapper.QuoteDomainTOUIMapperImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -19,7 +21,8 @@ class FavouritesViewModel(
     private val fetchFavouritesCase: FetchFavouritesCase,
     private val favDomainToUIMapper: FavDomainToUIMapper<FavouritesUIState>,
     private val favCommunication: FavouritesCommunication,
-) : ViewModel() {
+    private val saveAndDeleteFavouritesUseCase: SaveAndDeleteFavouritesUseCase,
+    ) : ViewModel() {
     fun fetchFavourites() {
         viewModelScope.launch {
             favCommunication.map(listOf(FavouritesUIState.Progress))
@@ -30,12 +33,21 @@ class FavouritesViewModel(
                 }
             }
             data.collect {
-                favCommunication.map(it)
+                if (it.isEmpty()){
+                    favCommunication.map(listOf(FavouritesUIState.Empty("NO DATA")))
+                }else{
+                    favCommunication.map(it)
+                }
             }
 
         }
     }
 
+    fun saveAndDeleteFavorites(toSave: Boolean, text: String) {
+        viewModelScope.launch {
+            saveAndDeleteFavouritesUseCase.toSaveAndDelete(toSave, text)
+        }
+    }
     fun observe(viewLifecycleOwner: LifecycleOwner, observer: Observer<List<FavouritesUIState>>) {
         favCommunication.observe(viewLifecycleOwner, observer)
     }

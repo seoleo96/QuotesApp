@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotesapp.R
@@ -77,28 +78,26 @@ class QuotesAdapter(
             private val blue = itemView.findViewById<ImageView>(R.id.favourite_imageview)
             override fun bind(quote: QuoteUIState) {
                 quote.map(object : ContentMapper {
-                    override fun map(text: String, author: String, toSave: Boolean) {
-                        mText.text = text
-                        mAuthor.text = author
+                    override fun map(text: String, author: String, toSave: Boolean) { //to Save = false
                         if (toSave){
                             blue.setBackgroundResource(R.drawable.star_full_black)
-
                         }else{
                             blue.setBackgroundResource(R.drawable.star_full_blue)
                         }
+                        mText.text = text
+                        mAuthor.text = author
+
                         cv.setOnClickListener {
                             itemClickListener.invoke(text, author, false, true)
                         }
 
                         blue.setOnClickListener {
-                            if (it.tag.toString() == "1") {
-                                it.tag = "2"
-                                it.setBackgroundResource(R.drawable.star_full_black)
-                                itemClickListener.invoke(text, author, true, false)
-                            } else {
-                                it.tag = "1"
+                            if (toSave) {
                                 it.setBackgroundResource(R.drawable.star_full_blue)
                                 itemClickListener.invoke(text, author, false, false)
+                            } else {
+                                it.setBackgroundResource(R.drawable.star_full_black)
+                                itemClickListener.invoke(text, author, true, false)
                             }
                         }
                     }

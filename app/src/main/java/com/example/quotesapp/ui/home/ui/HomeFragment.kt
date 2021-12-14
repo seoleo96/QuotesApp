@@ -10,21 +10,20 @@ import com.example.quotesapp.core.App
 import com.example.quotesapp.databinding.FragmentHomeBinding
 import com.example.quotesapp.ui.home.adapter.QuotesAdapter
 import com.example.quotesapp.ui.home.viewmodel.HomeViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by viewModel()
     private var _binding: FragmentHomeBinding? = null
-
     private val binding get() = _binding!!
+    private val adapter : QuotesAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        homeViewModel = (activity?.application as App).homeViewModel
-
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
@@ -33,33 +32,37 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val rv = binding.rv
-        val adapter = QuotesAdapter {text: String, author : String, toSave: Boolean, bool  :Boolean ->
-            if (bool){
-                val action =
-                    HomeFragmentDirections.actionNavigationHomeToQuoteDialogFragment(text, author)
-                findNavController().navigate(action)
-            }else{
-                homeViewModel.saveAndDeleteFavorites(toSave, text)
-                Toast.makeText(requireContext(), "$text, $author, $toSave", Toast.LENGTH_SHORT).show()
+        val adapter =
+            QuotesAdapter { text: String, author: String, toSave: Boolean, bool: Boolean ->
+                if (bool) {
+                    val action =
+                        HomeFragmentDirections.actionNavigationHomeToQuoteDialogFragment(text,
+                            author)
+                    findNavController().navigate(action)
+                } else {
+                    homeViewModel.saveAndDeleteFavorites(toSave, text)
+                }
             }
-        }
 
         rv.adapter = adapter
-        homeViewModel.fetchQuotes("")
+        homeViewModel.fetchQuotes("", requireContext())
         homeViewModel.observe(viewLifecycleOwner, {
             adapter.updateList(it)
         })
+        callBackNav()
+    }
 
+    private fun callBackNav() {
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Pair<String, Boolean>>(
             "author")
             ?.observe(viewLifecycleOwner) {
                 if (!it.second) {
                     homeViewModel.updateQuote(isCheck = it.second, author = it.first)
                 } else {
-                    homeViewModel.fetchQuotes(it.first)
+                    homeViewModel.fetchQuotes(it.first, requireContext())
                     homeViewModel.updateQuote(isCheck = it.second, author = it.first)
                     homeViewModel.observe(viewLifecycleOwner, { it ->
-                        adapter.updateList(it)
+                        adapter?.updateList(it)
                     })
                 }
             }

@@ -12,7 +12,6 @@ import kotlin.coroutines.CoroutineContext
 class AuthorRepositoryImpl(
     private val context: CoroutineContext,
     private val quoteCacheDataSource: QuoteCacheDataSource,
-    private val quotesCacheToAuthorData: QuotesCacheToAuthorMapperImpl,
 ) : AuthorRepository {
 
     override suspend fun fetchAuthors(): ResultData<List<AuthorDomain.AuthorDomainModel>> {
@@ -32,9 +31,5 @@ class AuthorRepositoryImpl(
                 AuthorDomain.AuthorDomainModel(it.author, it.isCheck)
             })
         }
-    }
-
-    suspend fun updateQuote(isCheck: Boolean, author: String) {
-        quoteCacheDataSource.updateQuote(isCheck, author)
     }
 }

@@ -8,9 +8,14 @@ class RetrofitInstance {
         val BASE_URL: String = "https://type.fit/api/"
     }
 
-    private val retofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    val quoteService: QuotesService = retofit.create(QuotesService::class.java)
+    fun instance(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    fun retrofitService(retrofit: Retrofit): QuotesService {
+        return retrofit.create(QuotesService::class.java)
+    }
 }

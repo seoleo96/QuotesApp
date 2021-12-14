@@ -17,9 +17,9 @@ sealed class QuoteUIState : Mapper<Unit, ContentMapper> {
         }
     }
 
-    class Fail(private val errorType: Throwable) : QuoteUIState() {
+    class Fail(private val errorType: String) : QuoteUIState() {
         override fun map(mapper: ContentMapper) {
-            mapper.map(errorType.message.toString())
+            mapper.map(errorType)
         }
     }
 

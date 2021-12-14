@@ -8,8 +8,6 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.quotesapp.R
-import com.example.quotesapp.ui.QuoteUIState
-import com.example.quotesapp.ui.home.mapper.ContentMapper
 
 
 class FavouritesAdapter(
@@ -26,6 +24,7 @@ class FavouritesAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (listUIState[position]) {
+            is FavouritesUIState.Empty -> 0
             is FavouritesUIState.Success -> 1
             is FavouritesUIState.Progress -> 2
         }
@@ -36,6 +35,7 @@ class FavouritesAdapter(
         viewType: Int,
     ): FavouritesViewHolder {
         return when (viewType) {
+            0 -> FavouritesViewHolder.Empty(R.layout.error_row.makeView(parent))
             1 -> FavouritesViewHolder.Base(R.layout.quote_row.makeView(parent), itemClickListener)
             else -> FavouritesViewHolder.Progress(R.layout.progress_row.makeView(parent))
 
@@ -65,7 +65,7 @@ class FavouritesAdapter(
 
         class Base(
             private val view: View,
-            private val itemClickListener: (text: String, author: String,toSave: Boolean, bool: Boolean) -> Unit,
+            private val itemClickListener: (text: String, author: String, toSave: Boolean, bool: Boolean) -> Unit,
         ) :
             FavouritesViewHolder(view) {
             private val mText = itemView.findViewById<TextView>(R.id.text_quote)
@@ -75,12 +75,7 @@ class FavouritesAdapter(
             override fun bind(fav: FavouritesUIState) {
                 fav.map(object : FavouritesContentMapper {
                     override fun map(text: String, author: String, toSave: Boolean) {
-                        if (toSave){
-                            blue.setBackgroundResource(R.drawable.star_full_black)
-
-                        }else{
-                            blue.setBackgroundResource(R.drawable.star_full_blue)
-                        }
+                        blue.setBackgroundResource(R.drawable.star_full_black)
                         mText.text = text
                         mAuthor.text = author
 
@@ -89,20 +84,30 @@ class FavouritesAdapter(
                         }
 
                         blue.setOnClickListener {
-                            if (it.tag.toString() == "1") {
-                                it.tag = "2"
-                                it.setBackgroundResource(R.drawable.star_full_black)
-                                itemClickListener.invoke(text, author, true, false)
-                            } else {
-                                it.tag = "1"
+                            if (toSave) {
                                 it.setBackgroundResource(R.drawable.star_full_blue)
                                 itemClickListener.invoke(text, author, false, false)
+                            } else {
+                                it.setBackgroundResource(R.drawable.star_full_black)
+                                itemClickListener.invoke(text, author, true, false)
                             }
                         }
                     }
                 })
             }
 
+        }
+
+        class Empty(view: View) : FavouritesViewHolder(view) {
+            private val textView = itemView.findViewById<TextView>(R.id.error_text)
+            override fun bind(uiState: FavouritesUIState) {
+                uiState.map(object : FavouritesContentMapper {
+                    override fun map(text: String, author: String, toSave: Boolean) {
+                        if (author == "1")
+                            textView.text = text
+                    }
+                })
+            }
         }
 
         class Fail(view: View) : FavouritesViewHolder(view) {

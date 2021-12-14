@@ -1,6 +1,7 @@
 package com.example.quotesapp.data.datasource.local
 
 import android.content.Context
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 
 
@@ -9,7 +10,12 @@ class QuoteCacheDataSourceImpl(
 ) : QuoteCacheDataSource {
 
     private val quoteDao = QuoteDB.getDatabase(context).quoteDao()
-    override suspend fun fetchQuotes(query: String) = quoteDao.fetchQuotes(query)
+    override fun fetchQuotes(query: String): Flow<List<QuoteCacheModel>> =
+        quoteDao.fetchQuotes(query)
+
+    override fun fetchQuotesCheck(): List<QuoteCacheModel> {
+        return quoteDao.fetchQuotesCheck()
+    }
 
     override suspend fun insertQuotes(quotes: List<QuoteCacheModel>) {
         quoteDao.deleteAll()
@@ -22,10 +28,11 @@ class QuoteCacheDataSourceImpl(
     }
 
     override suspend fun updateQuote(isCheck: Boolean, author: String) {
+        quoteDao.updateAll(false, true)
         quoteDao.updateQuote(isCheck, author)
     }
 
-    override  fun fetchFavourites(): Flow<List<QuoteCacheModel>> {
+    override fun fetchFavourites(): Flow<List<QuoteCacheModel>> {
         return quoteDao.fetchFavourites()
     }
 

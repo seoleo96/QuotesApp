@@ -8,13 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.quotesapp.core.App
 import com.example.quotesapp.databinding.FragmentAuthorsDialogListDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AuthorsDialogFragment : BottomSheetDialogFragment() {
 
-    private lateinit var authorViewModel: AuthorsViewModel
+    private val authorViewModel: AuthorsViewModel by viewModel()
+
 
     private var _binding: FragmentAuthorsDialogListDialogBinding? = null
 
@@ -30,7 +31,6 @@ class AuthorsDialogFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        authorViewModel = (activity?.application as App).authorViewModel
         _binding = FragmentAuthorsDialogListDialogBinding.inflate(inflater, container, false)
         return binding.root
     }

@@ -5,7 +5,6 @@
     android:id="@+id/quote_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
     app:dragEdge="right"
     app:mode="same_level">
 
@@ -22,15 +21,6 @@
             android:tag="1"
             android:layout_height="100dp"
             android:background="@drawable/star_full_blue"/>
-
-<!--        <ImageView-->
-<!--            android:id="@+id/not_favourite_imageview"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:layout_height="100dp"-->
-<!--            android:background="@drawable/star_full_black"/>-->
-
-
     </FrameLayout>
 
 

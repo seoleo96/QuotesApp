@@ -9,6 +9,6 @@ class QuoteDomainTOUIMapperImpl : QuoteDomainToUIMapper<QuoteUIState> {
     }
 
     override fun map(e: Exception): QuoteUIState {
-        return QuoteUIState.Fail(e)
+        return QuoteUIState.Fail(e.toString())
     }
 }

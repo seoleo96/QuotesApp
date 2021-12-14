@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
 interface QuoteDao {
 
     @Query("SELECT * FROM quotes WHERE author LIKE '%'|| :query ||'%' ORDER BY id ASC")
-    suspend fun fetchQuotes(query: String): List<QuoteCacheModel>
+    fun fetchQuotes(query: String): Flow<List<QuoteCacheModel>>
+
+    @Query("SELECT * FROM quotes")
+    fun fetchQuotesCheck(): List<QuoteCacheModel>
 
     @Query("SELECT * FROM quotes WHERE author LIKE '%'|| :query ||'%' ORDER BY author ASC")
     suspend fun fetchAuthorsByQuery(query: String): List<QuoteCacheModel>
@@ -27,6 +30,9 @@ interface QuoteDao {
 
     @Query("UPDATE quotes SET isCheck=:bool WHERE author = :author")
     fun updateQuote(bool: Boolean, author: String): Int
+
+    @Query("UPDATE quotes SET isCheck=:bool WHERE isCheck = :tr")
+    fun updateAll(bool: Boolean, tr : Boolean): Int
 
     @Query("UPDATE quotes SET toSave=:toSave WHERE text = :text")
     fun toSaveAndDelete(toSave: Boolean, text: String): Int

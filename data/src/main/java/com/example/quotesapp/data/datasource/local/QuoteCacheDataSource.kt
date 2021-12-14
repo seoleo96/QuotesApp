@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface QuoteCacheDataSource {
 
-    suspend fun fetchQuotes(query : String): List<QuoteCacheModel>
+    fun fetchQuotes(query : String): Flow<List<QuoteCacheModel>>
+    fun fetchQuotesCheck(): List<QuoteCacheModel>
     suspend fun insertQuotes(quotes: List<QuoteCacheModel>)
     suspend fun fetchAuthors(): List<QuoteCacheModel>
     suspend fun fetchAuthorsByQuery(query : String): List<QuoteCacheModel>
